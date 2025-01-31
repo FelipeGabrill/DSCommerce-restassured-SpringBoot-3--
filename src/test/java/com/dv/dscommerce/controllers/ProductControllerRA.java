@@ -15,13 +15,17 @@ import org.json.simple.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.dv.dscommerce.tests.TokenUtil;
+
 import io.restassured.http.ContentType;
 
 
 public class ProductControllerRA {
 	
-	private Long existingProductId, nonExistingProductId;
+	private String clientUsername, clientPassword, adminUsername, adminPassword;
+	private String clientToken, adminToken, invalidToken;
 	
+	private Long existingProductId, nonExistingProductId;
 	private String productName;
 	
 	private Map<String, Object> postProductInstance;
@@ -29,7 +33,19 @@ public class ProductControllerRA {
 	@BeforeEach
 	public void setUp() {
 		baseURI = "http://localhost:8080";
+		
+		clientUsername = "maria@gmail.com";
+		clientPassword = "123456";
+
+		adminUsername = "alex@gmail.com";
+		adminPassword = "123456";
+		
+		clientToken = TokenUtil.obtainAccessToken(clientUsername, clientPassword);
+		adminToken = TokenUtil.obtainAccessToken(adminUsername, adminPassword);
+		invalidToken = adminToken + "xpto";
+		
 		productName = "Macbook";
+		
 		postProductInstance = new HashMap<>();
 		postProductInstance.put("name", "Meu novo pedido");
 		postProductInstance.put("description", "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Qui ad, adipisci illum ipsam velit et odit eaque reprehenderit ex maxime delectus dolore labore, quisquam quae tempora natus esse aliquam veniam doloremque quam minima culpa alias maiores commodi. Perferendis enim");
@@ -42,7 +58,7 @@ public class ProductControllerRA {
 		Map<String, Object> category2 = new HashMap<>();
 		
 		category1 .put("id", 2);
-		category1 .put("id", 3);
+		category2 .put("id", 3);
 		
 		categories.add(category1);		
 		categories.add(category2);
@@ -103,9 +119,7 @@ public class ProductControllerRA {
 	public void insertShouldReturnProductCreatedWhenAdminLogged() {
 		
 		JSONObject newProduct = new JSONObject(postProductInstance);
-		
-		String adminToken = "";
-		
+				
 		given()
 			.header("Content-type", "application/json")
 			.header("Authorization", "Bearer " + adminToken)
@@ -120,7 +134,7 @@ public class ProductControllerRA {
 			.body("price", is(110.0F))
 			.body("imgUrl", equalTo("https://raw.githubusercontent.com/devsuperior/dscatalog-resources/master/backend/img/1-big.jpg"))
 			.body("description", equalTo("Lorem ipsum, dolor sit amet consectetur adipisicing elit. Qui ad, adipisci illum ipsam velit et odit eaque reprehenderit ex maxime delectus dolore labore, quisquam quae tempora natus esse aliquam veniam doloremque quam minima culpa alias maiores commodi. Perferendis enim"))
-			.body("categories", hasItems(2, 3));
+			.body("categories.id", hasItems(2, 3));
 			
 	}
 }
