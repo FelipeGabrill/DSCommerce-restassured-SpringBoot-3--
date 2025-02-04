@@ -19,7 +19,6 @@ import com.dv.dscommerce.tests.TokenUtil;
 
 import io.restassured.http.ContentType;
 
-
 public class ProductControllerRA {
 	
 	private String clientUsername, clientPassword, adminUsername, adminPassword;
@@ -322,4 +321,5 @@ public class ProductControllerRA {
 		.then()
 			.statusCode(401);
 	}
+
 }
